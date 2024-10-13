@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="streamlit-authenticator-sheets",
-    version="0.1.2",
+    version="0.1.3",
     author="José Luis Fdez-Figueroa",
     author_email="joseluidfft01@gmail.com",
     description="A secure authentication module to validate user credentials in a Streamlit application using the Google Sheets API and the library of streamlit authenticator.",
