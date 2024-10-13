@@ -1,0 +1,9 @@
+LICENSE
+README.md
+setup.py
+streamlit_authenticator_sheets/__init__.py
+streamlit_authenticator_sheets.egg-info/PKG-INFO
+streamlit_authenticator_sheets.egg-info/SOURCES.txt
+streamlit_authenticator_sheets.egg-info/dependency_links.txt
+streamlit_authenticator_sheets.egg-info/requires.txt
+streamlit_authenticator_sheets.egg-info/top_level.txt
