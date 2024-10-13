@@ -224,12 +224,29 @@ class Authenticate:
 
             # Check if "Register" button was clicked and show registration form
             if st.session_state.get('register'):
-                sheets_interact(self.key_rute, self.spreadsheet_id, self.sheet_page_name, self.email_column, self.password_column, self.name_column).show_registration_window()
+                self.registration()
 
         return st.session_state.get('name'), st.session_state.get('authentication_status'), st.session_state.get(
             'username')
 
+    def registration(self):
+        """Display a registration form."""
+        st.title("Register a New Account")
+        new_username = st.text_input('Email')
+        new_password = st.text_input('New Password', type='password')
+        confirm_password = st.text_input('Confirm Password', type='password')
 
+        if st.button('Submit'):
+            if new_username in self.usernames:
+
+                if new_password == confirm_password:
+                    # Logic to register the new user (e.g., add to database)
+                    sheets_interact(self.key_rute, self.spreadsheet_id, self.sheet_page_name, self.email_column, self.password_column, self.name_column).writte_passwords(confirm_password, new_username)
+                    st.success('Registration successful! You can now log in.')
+                else:
+                    st.error("Passwords do not match. Please try again.")
+            else:
+                st.error("Your email is not in the database of the AAMA, please contact with a meber of the AAMA if you think that you should have an account to access to this privet page.")
 
     def logout(self, button_name, location='main'):
         """Creates a logout button.
@@ -390,25 +407,6 @@ class sheets_interact:
 
         return existing_email
 
-
-    def show_registration_window(self):
-        """Display a registration form."""
-        st.title("Register a New Account")
-        new_username = st.text_input('Email')
-        new_password = st.text_input('New Password', type='password')
-        confirm_password = st.text_input('Confirm Password', type='password')
-
-        if st.button('Submit'):
-            if new_username in self.usernames:
-
-                if new_password == confirm_password:
-                    # Logic to register the new user (e.g., add to database)
-                    self.writte_passwords(self, confirm_password, new_username)
-                    st.success('Registration successful! You can now log in.')
-                else:
-                    st.error("Passwords do not match. Please try again.")
-            else:
-                st.error("Your email is not in the database of the AAMA, please contact with a meber of the AAMA if you think that you should have an account to access to this privet page.")
 def extract_string(needed_list):
     return needed_list[0][0]
 

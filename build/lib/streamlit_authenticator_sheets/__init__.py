@@ -52,7 +52,7 @@ class Hasher:
         return hashedpw
 
 class Authenticate:
-    def __init__(self, names, usernames, passwords, cookie_name, key, cookie_expiry_days=30):
+    def __init__(self, names, usernames, passwords, cookie_name, key, key_rute, spreadsheet_id, sheet_page_name, email_column, password_column, name_column, cookie_expiry_days=30, max_lenth=1000, header=True):
         """Create a new instance of "Authenticate".
         Parameters
         ----------
@@ -83,6 +83,14 @@ class Authenticate:
         self.cookie_name = cookie_name
         self.key = key
         self.cookie_expiry_days = cookie_expiry_days
+        self.key_rute = key_rute
+        self.spreadsheet_id = spreadsheet_id
+        self.sheet_page_name = sheet_page_name
+        self.email_column = email_column
+        self.password_column = password_column
+        self.name_column = name_column
+        self.max_length = max_lenth
+        self.header = header
         self.cookie_manager = stx.CookieManager()
 
 
@@ -216,29 +224,11 @@ class Authenticate:
 
             # Check if "Register" button was clicked and show registration form
             if st.session_state.get('register'):
-                self.show_registration_window()
+                sheets_interact(self.key_rute, self.spreadsheet_id, self.sheet_page_name, self.email_column, self.password_column, self.name_column).show_registration_window()
 
         return st.session_state.get('name'), st.session_state.get('authentication_status'), st.session_state.get(
             'username')
 
-    def show_registration_window(self, key_rute, spreadsheet_id, sheet_page_name, email_column ,password_column, name_column, type, max_length, header):
-        """Display a registration form."""
-        st.title("Register a New Account")
-        new_username = st.text_input('Email')
-        new_password = st.text_input('New Password', type='password')
-        confirm_password = st.text_input('Confirm Password', type='password')
-
-        if st.button('Submit'):
-            if new_username in self.usernames:
-
-                if new_password == confirm_password:
-                    # Logic to register the new user (e.g., add to database)
-                    sheets_interact(key_rute, spreadsheet_id, sheet_page_name, email_column, password_column, name_column, type, max_length, header).writte_passwords(confirm_password, new_username)
-                    st.success('Registration successful! You can now log in.')
-                else:
-                    st.error("Passwords do not match. Please try again.")
-            else:
-                st.error("Your email is not in the database of the AAMA, please contact with a meber of the AAMA if you think that you should have an account to access to this privet page.")
 
 
     def logout(self, button_name, location='main'):
@@ -309,20 +299,19 @@ if not _RELEASE:
     #     st.warning('Please enter your username and password')
 
 class sheets_interact:
-    def __init__(self,key_rute: str, spreadsheet_id: str,sheet_page_name: str, email_column: str ,password_column: str, name_column: str ,type='password', max_lenth:int =1000, header:bool = True):
+    def __init__(self,key_rute: str, spreadsheet_id: str,sheet_page_name: str, email_column: str ,password_column: str, name_column: str, max_lenth:int =1000, header:bool = True):
         self.key_rute = key_rute
         self.spreadsheet_id = spreadsheet_id
         self.sheet_page_name = sheet_page_name
         self.email_column = email_column
         self.password_column = password_column
         self.name_column = name_column
-        self.type = type
         self.max_length = max_lenth
         self.header = header
 
 
 
-    def extract_all(self):
+    def extract_all(self, extract_type:str):
         '''
         Devuelve una matriz y cada array es un string con el valor que contiene la celda del excel en el que se lee
         '''
@@ -351,13 +340,13 @@ class sheets_interact:
         result = sheet.values().get(spreadsheetId=SPREADSHEET_ID, range=str(sheet_page_name)+'!'+str(email_column)+str(lower_row)+':'+str(email_column)+str(max_lenth)).execute()
         length = len(flatten_list(result.get('values')))
 
-        if self.type == 'password':
+        if extract_type == 'password':
             result = sheet.values().get(spreadsheetId=SPREADSHEET_ID,
                                         range=str(sheet_page_name)+'!'+str(password_column)+str(lower_row)+':'+str(password_column) + str(length + 1)).execute()
-        elif self.type == 'name':
+        elif extract_type == 'name':
             result = sheet.values().get(spreadsheetId=SPREADSHEET_ID,
                                         range=str(sheet_page_name)+'!'+str(name_column)+str(lower_row)+':'+str(name_column) + str(length + 1)).execute()
-        elif self.type == 'email':
+        elif extract_type == 'email':
             pass
         else:
             raise ValueError('You introduce a wrong extract type: The options of extract type are only "password", "name" or "email"')
@@ -402,7 +391,24 @@ class sheets_interact:
         return existing_email
 
 
+    def show_registration_window(self):
+        """Display a registration form."""
+        st.title("Register a New Account")
+        new_username = st.text_input('Email')
+        new_password = st.text_input('New Password', type='password')
+        confirm_password = st.text_input('Confirm Password', type='password')
 
+        if st.button('Submit'):
+            if new_username in self.usernames:
+
+                if new_password == confirm_password:
+                    # Logic to register the new user (e.g., add to database)
+                    self.writte_passwords(self, confirm_password, new_username)
+                    st.success('Registration successful! You can now log in.')
+                else:
+                    st.error("Passwords do not match. Please try again.")
+            else:
+                st.error("Your email is not in the database of the AAMA, please contact with a meber of the AAMA if you think that you should have an account to access to this privet page.")
 def extract_string(needed_list):
     return needed_list[0][0]
 
