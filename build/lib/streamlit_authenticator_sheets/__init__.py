@@ -351,13 +351,13 @@ class sheets_interact:
         result = sheet.values().get(spreadsheetId=SPREADSHEET_ID, range=str(sheet_page_name)+'!'+str(email_column)+str(lower_row)+':'+str(email_column)+str(max_lenth)).execute()
         length = len(flatten_list(result.get('values')))
 
-        if type == 'password':
+        if self.type == 'password':
             result = sheet.values().get(spreadsheetId=SPREADSHEET_ID,
                                         range=str(sheet_page_name)+'!'+str(password_column)+str(lower_row)+':'+str(password_column) + str(length + 1)).execute()
-        elif type == 'name':
+        elif self.type == 'name':
             result = sheet.values().get(spreadsheetId=SPREADSHEET_ID,
                                         range=str(sheet_page_name)+'!'+str(name_column)+str(lower_row)+':'+str(name_column) + str(length + 1)).execute()
-        elif type == 'email':
+        elif self.type == 'email':
             pass
         else:
             raise ValueError('You introduce a wrong extract type: The options of extract type are only "password", "name" or "email"')

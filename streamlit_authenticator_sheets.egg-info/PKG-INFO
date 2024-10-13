@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: streamlit-authenticator-sheets
-Version: 0.1.1
+Version: 0.1.2
 Summary: A secure authentication module to validate user credentials in a Streamlit application using the Google Sheets API and the library of streamlit authenticator.
 Home-page: https://github.com/JoseLuisFFDT/streamlit-authenticator-sheets
 Author: José Luis Fdez-Figueroa
