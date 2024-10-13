@@ -384,7 +384,7 @@ class sheets_interact:
         sheet = service.spreadsheets()
 
         # EL valor debe ser una matriz [[]]
-        value_mat = [[hash(value)]]
+        value_mat = [[Hasher(value).hash(value)]]
 
         # Encuentra en qeu posición del excel debe escribir
         all_ids = self.extract_all('email')

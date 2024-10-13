@@ -387,7 +387,7 @@ class sheets_interact:
         value_mat = [[hash(value)]]
 
         # Encuentra en qeu posición del excel debe escribir
-        all_ids = self.extract_all()
+        all_ids = self.extract_all('email')
         existing_email = False
         if self.header:
             lower_row = 2
