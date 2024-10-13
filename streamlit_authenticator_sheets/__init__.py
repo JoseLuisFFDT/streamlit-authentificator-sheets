@@ -360,8 +360,7 @@ class sheets_interact:
         elif type == 'email':
             pass
         else:
-            raise (
-                'You introduce a wrong extract type: The options of extract type are only "password", "name" or "email"')
+            raise ValueError('You introduce a wrong extract type: The options of extract type are only "password", "name" or "email"')
 
         # Extraemos values del resultado
         values = flatten_list(result.get('values'))
