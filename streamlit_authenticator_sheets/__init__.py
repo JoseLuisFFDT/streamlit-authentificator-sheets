@@ -5,6 +5,7 @@ import streamlit as st
 from yaml.loader import SafeLoader
 from datetime import datetime, timedelta
 import extra_streamlit_components as stx
+import pandas as pd
 import streamlit.components.v1 as components
 from googleapiclient.discovery import build
 from google.oauth2 import service_account
@@ -406,6 +407,38 @@ class sheets_interact:
                 pass
 
         return existing_email
+
+    def extract_dataframe(self):
+        """
+        Devuelve un DataFrame con los datos de la hoja de cálculo de Google Sheets
+        desde la columna A hasta BG, usando la primera fila como encabezados.
+        """
+        SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
+        KEY = self.key_rute
+        # Escribe el ID de tu documento parte de la url entre /d/.../edit
+        SPREADSHEET_ID = self.spreadsheet_id
+        creds = service_account.Credentials.from_service_account_file(KEY, scopes=SCOPES)
+
+        service = build('sheets', 'v4', credentials=creds)
+        # El objeto sheets contendrá la hoja de excel con la que interactuaremos desde python
+        sheet = service.spreadsheets()
+
+        # Llama a la api
+        result = sheet.values().get(spreadsheetId=SPREADSHEET_ID, range='Socios AAMA!E2:E1000').execute()
+        length = len(flatten_list(result.get('values')))
+
+        RANGE = 'Socios AAMA!A1:BG' + str(length + 1)  # Se incluye la primera fila con los encabezados
+        result = sheet.values().get(spreadsheetId=SPREADSHEET_ID, range=RANGE).execute()
+        values = result.get('values', [])
+
+        # Verificar si hay datos
+        if not values:
+            return pd.DataFrame()  # Si no hay datos, devolver un DataFrame vacío
+
+        # Convertir a DataFrame, usando la primera fila como nombres de columnas
+        df = pd.DataFrame(values[1:], columns=values[0])
+
+        return df
 
 def extract_string(needed_list):
     return needed_list[0][0]
